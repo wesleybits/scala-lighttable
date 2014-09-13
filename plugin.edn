@@ -1,6 +1,6 @@
-{:name "scala"
+{:name "Scala"
  :version "0.0.1"
- :author ""
- :source ""
- :desc ""
+ :author "wesleybits"
+ :source "https://github.com/wesleybits/scala-lighttable"
+ :desc "A potentially useful Scala mode for LightTable."
  :behaviors "scala.behaviors"}
