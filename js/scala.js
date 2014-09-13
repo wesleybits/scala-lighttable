@@ -28,7 +28,7 @@ CodeMirror.defineMode("scala2", function(config, parserConfig) {
       /^((def)|(val)|(var)|(class)|(trait)|(interface)|(object)) /;
   
   var flowControl =
-      /^((map)|(flatMap)|(foldLeft)|(foldRight)|(fold)|(filter)|(apply)|(compose)|(andThen)|(recover(Total)?)|(if)|(else)|(match))/;
+      /^((map)|(flatMap)|(foldLeft)|(foldRight)|(fold)|(filter)|(apply)|(compose)|(andThen)|(recover(Total)?)|(if)|(else)|(match)|(orElse)|(getOrElse))/;
   
   var character =
       /^(('\\.')|('[~\']'))/;
@@ -136,7 +136,7 @@ CodeMirror.defineMode("scala2", function(config, parserConfig) {
     
     // parse chars/symbols
     if (stream.eat("'")) {
-      if (stream.match(/^[a-z_A-Z][a-z_A-Z0-9]+/)) return 'symbol';
+      if (stream.match(/^[a-z_A-Z][a-z_A-Z0-9]+/)) return 'string-2';
       else {
         if (stream.eat('\\')) stream.next();
         stream.next();
@@ -146,12 +146,12 @@ CodeMirror.defineMode("scala2", function(config, parserConfig) {
     };
     
     // single-line string, or multi-line strings
-    if (stream.match('"""')) {
+    if (stream.match(/^s?p"""/)) {
       state.scopes.push('string3');
       return 'string';
     };
     
-    if (stream.eat('"')) {
+    if (stream.eat('"') || stream.match('s"')) {
       state.scopes.push('string1');
       return 'string';
     };
@@ -164,21 +164,21 @@ CodeMirror.defineMode("scala2", function(config, parserConfig) {
     
     // parse flow control
     if (stream.match(flowControl) && (stream.match(/^[ ({]/, false) || stream.eol()))
-      return 'atom';
+      return 'keyword';
     
-    // parse regular names and numbers
+    // parse numbers
     if (
       stream.match(/^[1-9][0-9]*([.][0-9]+)?[flFL]?/) ||
       stream.match(/^0[xob][a-fA-F0-9]+/) ||
-      stream.match(/^0+/)
+      stream.match(/^0+/) ||
+      (stream.match(/^((true)|(false)|(null))/) && stream.match(/^[ .{}()\[\]]/, false))
     )
-      return 'variable';
-    else if (stream.match(/^[a-z_A-Z0-9]+(_\S)?/) || stream.match(/^[ (){}[]]/))
-      return 'variable';
-    else {
-      stream.next();
-      return 'operator';
-    };
+      return 'atom';
+    
+    if (stream.match(/^[.(){}\[\]]+/)) return 'variable';
+
+    stream.eatWhile(/[^ .(){}\[\]'"]/);
+    return 'variable';
   };
   
   var extern = {
