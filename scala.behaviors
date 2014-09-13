@@ -1,0 +1,7 @@
+{:+ {:app [(:lt.objs.plugins/load-js ["scala_compiled.js" "js/scala.js"])]
+     :editor.scala []
+     :files [(:lt.objs.files/file-types [{:name "Scala"
+                                          :mime "text/scala"
+                                          :tags [:editor.scala]
+                                          :exts [:scala :sbt]}])]
+     :scala.hello [:lt.plugins.scala/on-close-destroy]}}
