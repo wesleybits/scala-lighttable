@@ -21,6 +21,9 @@ CodeMirror.defineMode("scala2", function(config, parserConfig) {
   var keywords2 =
       /^((try)|(catch)|(for)|(yeild)|(while))/;
   
+  var keywords3 =
+      /^((this))/;
+  
   var definitionWords = 
       /^((def)|(val)|(var)|(class)|(trait)|(interface)|(object)) /;
   
@@ -105,14 +108,12 @@ CodeMirror.defineMode("scala2", function(config, parserConfig) {
     if (stream.match(keywords))
       return 'builtin';
     
-    if (stream.match(keywords2)) {
-      var c = stream.peek();
-      if (c == ' ' || c == '{' || c == '(' || stream.eol()) return 'builtin';
-      else return 'operator';
+    if (stream.match(keywords2) && stream.match(/^[ ({]/, false)) {
+      return 'builtin';
     };
     
     // parse underscore
-    if (stream.eat("_") && stream.match(/[. ]/, false))
+    if (stream.eat("_") && (stream.match(/^\W/, false) || stream.eol()))
       return 'builtin';
 
     // parse definition words
@@ -162,18 +163,14 @@ CodeMirror.defineMode("scala2", function(config, parserConfig) {
     if (stream.match("=>")) return 'atom';
     
     // parse flow control
-    if (stream.match(flowControl)) {
-      var c = stream.peek();
-      if (c == ' ' || c == '(' || c == '{' || stream.eol()) 
-        return 'atom';
-      else
-        return 'operator';
-    }
+    if (stream.match(flowControl) && (stream.match(/^[ ({]/, false) || stream.eol()))
+      return 'atom';
     
     // parse regular names and numbers
     if (
       stream.match(/^[1-9][0-9]*([.][0-9]+)?[flFL]?/) ||
-      stream.match(/^0[xob][a-fA-F0-9]+/)
+      stream.match(/^0[xob][a-fA-F0-9]+/) ||
+      stream.match(/^0+/)
     )
       return 'variable';
     else if (stream.match(/[a-z_A-Z0-9]+(_[^ a-z_A-Z0-9])?/))
