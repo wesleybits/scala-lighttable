@@ -173,11 +173,11 @@ CodeMirror.defineMode("scala2", function(config, parserConfig) {
       stream.match(/^0+/)
     )
       return 'variable';
-    else if (stream.match(/[a-z_A-Z0-9]+(_[^ a-z_A-Z0-9])?/))
-      return 'operator';
+    else if (stream.match(/^[a-z_A-Z0-9]+(_\S)?/) || stream.match(/^[ (){}[]]/))
+      return 'variable';
     else {
       stream.next();
-      return 'variable';
+      return 'operator';
     };
   };
   
