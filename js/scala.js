@@ -16,7 +16,7 @@ CodeMirror.defineMode("scala2", function(config, parserConfig) {
   };
   
   var keywords = 
-      /^((package)|(import)|(sealed)|(case)|(private)|(override)|(extends)|(with)|(implicit)|(try)|(catch)|(for)|(yeild)) /;
+      /^((package)|(import)|(sealed)|(case)|(private)|(override)|(extends)|(with)|(implicit)|(try)|(catch)|(for)|(yeild)|(new)) /;
   
   var keywords2 =
       /^((try)|(catch)|(for)|(yeild)|(while))/;
@@ -75,17 +75,18 @@ CodeMirror.defineMode("scala2", function(config, parserConfig) {
   };
   
   function parseDefParen(stream, state) {
-    if (stream.eat("(")) {
+    if (stream.eat(/[(]/)) {
       state.scopes.push('def-paren');
-      return 'variable';
-    }
-    
-    if (stream.eat(")")) {
-      state.scopes.pop();
       return 'variable';
     };
     
-    if (stream.eat(",")) return 'variable';
+    if (stream.eat(/[)]/)) {
+      state.scopes.pop();
+      return 'variable';
+    };
+  
+    if (stream.eat(/[,:]/))
+      return 'variable';
     
     stream.eatWhile(/[^ ,()]/);
     return 'def';
@@ -97,6 +98,9 @@ CodeMirror.defineMode("scala2", function(config, parserConfig) {
       state.scopes.push('def-paren');
       return 'variable'
     };
+    
+    if (stream.eat(/[,:]/))
+      return 'variable';
     
     stream.eatWhile(/[^ ,(){}]/);
     state.scopes.pop();
@@ -146,7 +150,7 @@ CodeMirror.defineMode("scala2", function(config, parserConfig) {
     };
     
     // single-line string, or multi-line strings
-    if (stream.match(/^s?p"""/)) {
+    if (stream.match(/^s?"""/)) {
       state.scopes.push('string3');
       return 'string';
     };
@@ -175,9 +179,9 @@ CodeMirror.defineMode("scala2", function(config, parserConfig) {
     )
       return 'atom';
     
-    if (stream.match(/^[.(){}\[\]]+/)) return 'variable';
+    if (stream.match(/^[.:;(){}\[\]]+/)) return 'variable';
 
-    stream.eatWhile(/[^ .(){}\[\]'"]/);
+    stream.eatWhile(/[^ .:;(){}\[\]'"]/);
     return 'variable';
   };
   
