@@ -19,7 +19,7 @@ CodeMirror.defineMode("scala2", function(config, parserConfig) {
       /^((package)|(import)|(sealed)|(case)|(private)|(override)|(extends)|(with)|(implicit)|(try)|(catch)|(for)|(yeild)|(new)) /;
   
   var keywords2 =
-      /^((try)|(catch)|(for)|(yeild)|(while))/;
+      /^((try)|(catch)|(for)|(yield)|(while))/;
   
   var keywords3 =
       /^((this))/;
@@ -28,7 +28,7 @@ CodeMirror.defineMode("scala2", function(config, parserConfig) {
       /^((def)|(val)|(var)|(class)|(trait)|(interface)|(object)) /;
   
   var flowControl =
-      /^((map)|(flatMap)|(foldLeft)|(foldRight)|(fold)|(filter)|(apply)|(compose)|(andThen)|(recover(Total)?)|(if)|(else)|(match)|(orElse)|(getOrElse))/;
+      /^((map)|(flatMap)|(foldLeft)|(foldRight)|(fold)|(filter)|(apply)|(compose)|(andThen)|(recover(Total)?)|(if)|(else)|(match)|(orElse)|(getOrElse)|(foreach))/;
   
   var character =
       /^(('\\.')|('[~\']'))/;
